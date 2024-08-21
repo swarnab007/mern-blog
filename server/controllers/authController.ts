@@ -1,69 +1,91 @@
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { User } from "../models/userModel";
-import { generateTokenAndSetCookie } from "../utils/verifyToken";
+import jwt from "jsonwebtoken";
+// import { generateTokenAndSetCookie } from "../utils/verifyToken";
 
+// Signup functionality
 export const signup = async (req: Request, res: Response) => {
-  const { email, password, username } = req.body;
-
   try {
-    // Check if all fields are provided
-    if (!email || !password || !username) {
-      return res
-        .status(400)
-        .json({ success: false, message: "All fields are required" });
-    }
+    const { email, password, username } = req.body;
 
-    // Check if the user already exists
-    const userAlreadyExists = await User.findOne({ email });
-    console.log("userAlreadyExists", userAlreadyExists);
-
-    if (userAlreadyExists) {
+    const userExists = await User.findOne({ email });
+    if (userExists) {
       return res
         .status(400)
         .json({ success: false, message: "User already exists" });
     }
 
-    // Hash the password
-    const hashedPassword = await bcryptjs.hash(password, 10);
+    const salt = 10;
+    const hashedPass = await bcrypt.hash(password, salt);
 
-    // Generate a verification token
-    const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
-
-    // Alternatively, use crypto for a more secure token
-    // const verificationToken = crypto.randomBytes(16).toString("hex");
-
-    // Create a new user
-    const user = new User({
+    // saving the object in DB
+    const user = await User.create({
       email,
-      password: hashedPassword,
+      password: hashedPass,
       username,
-      verificationToken,
-      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
-
-    // Save the user to the database
-    await user.save();
-
-    // Generate JWT and set cookie
-    generateTokenAndSetCookie(res, user._id as number);
-
-    // Send verification email (uncomment when ready)
-    // await sendVerificationEmail(user.email, verificationToken);
-
-    // Respond with the user object, excluding the password
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      user: {
-        ...user.toObject(),
-        password: undefined,
-        verificationToken: undefined, // Exclude the token from the response
-      },
-    });
+    // send success response
+    res
+      .status(201)
+      .json({ success: true, message: "Registered successfully", user });
+    console.log(user);
   } catch (error: any) {
-    res.status(400).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: "Error while sign up" });
   }
+};
+
+// Login functionality
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body;
+    // check existing user
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User does not exist" });
+    }
+    // compare the password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+
+    let JWT_SECRET = process.env.JWT_SECRET as string;
+    // create token
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    user.token = token;
+    // Set cookie for token and return success response
+    const options = {
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    };
+    // send cookie in response
+
+    res
+      .cookie("token", token, options)
+      .status(200)
+      .json({
+        success: true,
+        message: `Welcome back ${user.username}`,
+        user: {
+          name: user.username,
+          email: user.email,
+          token: user.token,
+        },
+      });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: "Error while login" });
+  }
+};
+
+// Logout functionality
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie("token");
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 };

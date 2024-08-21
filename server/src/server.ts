@@ -16,7 +16,7 @@ app.use(express.json()); // allows us to parse incoming requests:req.body
 app.use(cookieParser()); // allows us to parse cookies
 
 // Specify the port number for the server
-const port = 6000;
+const port = 5000;
 
 app.use("/api/auth", authRoutes);
 

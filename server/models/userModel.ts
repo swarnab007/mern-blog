@@ -4,12 +4,7 @@ interface IUser extends Document {
   email: string;
   password: string;
   username: string;
-  lastLogin?: Date;
-  isVerified: boolean;
-  resetPasswordToken?: string;
-  resetPasswordExpiresAt?: Date;
-  verificationToken?: string;
-  verificationTokenExpiresAt?: Date;
+  token?: string;
 }
 
 const userSchema: Schema<IUser> = new mongoose.Schema(
@@ -27,18 +22,9 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       type: String,
       required: true,
     },
-    lastLogin: {
-      type: Date,
-      default: Date.now(),
+    token : {
+      type: String,
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    resetPasswordToken: String,
-    resetPasswordExpiresAt: Date,
-    verificationToken: String,
-    verificationTokenExpiresAt: Date,
   },
   { timestamps: true }
 );
