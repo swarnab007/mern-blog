@@ -21,32 +21,48 @@ This is a full-stack blog application built using the MERN (MongoDB, Express.js,
 ### Clone the Repository
 ```bash
 git clone https://github.com/swarnab007/mern-blog.git
+```
+### Navigate to Project Directory
+```bash
 cd mern-blog
+```
 
 ### Backend Setup
-
 Navigate to the backend directory:
+```bash
 cd server
+```
 
 Install dependencies:
+```bash
 npm i
+```
 
 Create a .env file in the backend directory with the following content:
+```bash
 MONGO_URI=your_mongo_connection_string
 JWT_SECRET=your_jwt_secret
 PORT=5000
-
+```
 
 Start the backend server:
+```bash
 npm run dev
+```
 
-Frontend Setup
+### Frontend Setup
 Navigate to the frontend directory:
+```bash
 cd client
+```
 
 Install dependencies:
+```bash
 npm i
+```
 
 Start the frontend development server:
+```bash
 npm run dev
+```
 
