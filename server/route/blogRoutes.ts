@@ -14,6 +14,6 @@ router.post("/create-blog", uploadMiddleware.single("file"), createBlog);
 router.put("/update-blog", uploadMiddleware.single("file"), updateBlog);
 router.get("/get-blogs", getAllBlog);
 router.get("/get-blog/:id", getSingleBlog);
-router.delete("/delete-blog", deleteBlog);
+router.delete("/delete-blog/:id", deleteBlog);
 
 export default router;

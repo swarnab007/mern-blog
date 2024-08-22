@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import Editor from "../../Editor";
 import axios from "axios";
 import { SERVER_URL } from "../../../const";
@@ -10,6 +10,8 @@ const EditPost: React.FC = () => {
   const [content, setContent] = useState<string>("");
   const [files, setFiles] = useState<FileList | null>(null);
   const [redirect, setRedirect] = useState<boolean>(false);
+  const { id } = useParams();
+  
 
   const createNewPost = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,14 +51,13 @@ const EditPost: React.FC = () => {
   const deleteHandler = async () => {
     try {
       const response = await axios.delete(
-        `${SERVER_URL}/api/blog/delete-blog`,
+        `${SERVER_URL}/api/blog/delete-blog/${id}`,
         {
           withCredentials: true,
         }
       );
       alert("Post deleted");
       console.log(response);
-      
 
       if (response.status === 200) {
         setRedirect(true);
