@@ -8,7 +8,11 @@ This is a full-stack blog application built using the MERN (MongoDB, Express.js,
 - Responsive design using React and Tailwind CSS/Bootstrap
 - Tagging system for categorizing blog posts
 
-## Installation
+## Technologies
+- Frontend: React, TypeScript ,Tailwind CSS, Axios
+- Backend: Node.js, TypeScript ,Express.js, MongoDB, Mongoose, JWT
+- State Management: React Context API
+- Styling: Bootstrap
 
 ### Prerequisites
 - Node.js and npm installed
@@ -22,7 +26,27 @@ cd mern-blog
 ### Backend Setup
 
 Navigate to the backend directory:
-```bash
 cd server
 
+Install dependencies:
+npm i
+
+Create a .env file in the backend directory with the following content:
+MONGO_URI=your_mongo_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=5000
+
+
+Start the backend server:
+npm run dev
+
+Frontend Setup
+Navigate to the frontend directory:
+cd client
+
+Install dependencies:
+npm i
+
+Start the frontend development server:
+npm run dev
 
