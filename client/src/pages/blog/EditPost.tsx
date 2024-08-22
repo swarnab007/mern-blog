@@ -54,6 +54,9 @@ const EditPost: React.FC = () => {
           withCredentials: true,
         }
       );
+      alert("Post deleted");
+      console.log(response);
+      
 
       if (response.status === 200) {
         setRedirect(true);

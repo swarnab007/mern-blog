@@ -167,7 +167,7 @@ export const deleteBlog = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { token } = req.cookies;
-    const secret = process.env.JWT_SECRET as string;
+    const secret = process.env.JWT_SECRET as string || "secret";
 
     jwt.verify(token, secret, {}, async (err, decodedToken) => {
       if (err || !decodedToken) {
