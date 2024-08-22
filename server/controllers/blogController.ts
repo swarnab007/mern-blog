@@ -9,9 +9,11 @@ interface CustomJwtPayload extends JwtPayload {
 }
 
 // Upload Picture and Create Blog Post
-export const createBlog = async (req, res: Response) => {
+export const createBlog = async (req: Request, res: Response) => {
+  console.log(req.file);
+
   try {
-    const { originalname, path } = req.file;
+    const { originalname, path } = (req as any).file;
 
     // Check if the file exists before renaming
     if (!fs.existsSync(path)) {
@@ -34,7 +36,7 @@ export const createBlog = async (req, res: Response) => {
         .json({ success: false, message: "No token provided" });
     }
 
-    const secret = process.env.JWT_SECRET as string;
+    const secret = (process.env.JWT_SECRET as string) || "secret";
 
     // Verify JWT token
     jwt.verify(token, secret, {}, async (err, decodedToken) => {
@@ -64,7 +66,7 @@ export const createBlog = async (req, res: Response) => {
       });
 
       // Respond with the created blog document
-      res.status(200).json({ success: true, data: blogDoc });
+      res.status(200).json({ success: true, message: "OK", data: blogDoc });
     });
   } catch (error) {
     console.error("Error in uploadPic:", error);
@@ -73,7 +75,7 @@ export const createBlog = async (req, res: Response) => {
 };
 
 // update blog post
-export const updateBlog = async (req, res: Response) => {
+export const updateBlog = async (req: any, res: Response) => {
   try {
     let newPath: string | null = null;
 

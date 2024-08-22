@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { User } from "../models/userModel";
 import jwt from "jsonwebtoken";
+import { log } from "console";
 // import { generateTokenAndSetCookie } from "../utils/verifyToken";
 
 // Signup functionality
@@ -54,7 +55,9 @@ export const login = async (req: Request, res: Response) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    let JWT_SECRET = process.env.JWT_SECRET as string;
+    console.log(process.env.JWT_SECRET);
+
+    let JWT_SECRET = process.env.JWT_SECRET || "secret";
     // create token
     const token = jwt.sign({ id: user._id }, JWT_SECRET, {
       expiresIn: "7d",
@@ -75,11 +78,11 @@ export const login = async (req: Request, res: Response) => {
         message: `Welcome back ${user.username}`,
         user: {
           name: user.username,
-          email: user.email,
           token: user.token,
         },
       });
   } catch (error: any) {
+    console.log(error);
     res.status(500).json({ success: false, message: "Error while login" });
   }
 };
@@ -88,4 +91,20 @@ export const login = async (req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {
   res.clearCookie("token");
   res.status(200).json({ success: true, message: "Logged out successfully" });
+};
+
+// profile functionality
+export const profile = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.cookies;
+    const secret = process.env.JWT_SECRET || "secret";
+    jwt.verify(token, secret, {}, (err, info) => {
+      if (err) throw err;
+      res
+        .status(200)
+        .json({ success: true, message: "Welcome to your profile", info });
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: "Error while profile" });
+  }
 };
