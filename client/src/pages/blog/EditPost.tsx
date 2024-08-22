@@ -46,19 +46,22 @@ const EditPost: React.FC = () => {
     return <Navigate to="/" />;
   }
 
-    const deleteHandler = async () => {
-        try {
-        const response = await axios.delete(`${SERVER_URL}/api/blog/delete-blog`, {
-            withCredentials: true,
-        });
-    
-        if (response.status === 200) {
-            setRedirect(true);
+  const deleteHandler = async () => {
+    try {
+      const response = await axios.delete(
+        `${SERVER_URL}/api/blog/delete-blog`,
+        {
+          withCredentials: true,
         }
-        } catch (error) {
-        console.error("Error deleting post:", error);
-        }
-    };
+      );
+
+      if (response.status === 200) {
+        setRedirect(true);
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
 
   return (
     <form onSubmit={createNewPost}>
@@ -86,7 +89,13 @@ const EditPost: React.FC = () => {
       />
       <Editor value={content} onChange={setContent} />
       <button style={{ marginTop: "5px" }}>Update post</button>
-      <button onClick={deleteHandler} style={{ marginTop: "5px" }}>Delete post</button>
+      <button
+        onClick={deleteHandler}
+        type="submit"
+        style={{ marginTop: "5px" }}
+      >
+        Delete post
+      </button>
     </form>
   );
 };
